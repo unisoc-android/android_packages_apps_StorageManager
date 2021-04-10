@@ -126,9 +126,31 @@ public class AppDeletionPreferenceGroup extends CollapsibleCheckboxPreferenceGro
         AppDeletionPreference p = (AppDeletionPreference) preference;
         mBackend.setChecked(p.getPackageName(), isChecked);
         logAppToggle(isChecked, p.getPackageName());
+        setCheckedAll(isChecked);
         updateText();
         return true;
     }
+
+    /* Bug1105762: when all items has been checked should set the apps group checked {@ */
+    private void setCheckedAll(boolean checked){
+        boolean allChecked = true;
+        if (!checked) {
+            allChecked = false;
+        } else {
+            for (int i = 0; i < getPreferenceCount(); i++) {
+                AppDeletionPreference p = (AppDeletionPreference) getPreference(i);
+                if (!(mBackend.isChecked(p.getPackageName()))) {
+                    allChecked = false;
+                    break;
+                }
+            }
+        }
+        // Temporarily stop listening to avoid propagating the checked change to children.
+        setOnPreferenceChangeListener(null);
+        setChecked(allChecked);
+        setOnPreferenceChangeListener(this);
+    }
+    /* @} */
 
     @Override
     public void onClick() {

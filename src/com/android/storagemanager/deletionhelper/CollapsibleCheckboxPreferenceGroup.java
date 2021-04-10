@@ -25,6 +25,7 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 
+import android.view.AbsSavedState;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
@@ -193,7 +194,7 @@ public class CollapsibleCheckboxPreferenceGroup extends PreferenceGroup implemen
         }
     }
 
-    private static class SavedState extends BaseSavedState {
+    private static class SavedState extends AbsSavedState {
         boolean checked;
         boolean collapsed;
 
@@ -207,6 +208,12 @@ public class CollapsibleCheckboxPreferenceGroup extends PreferenceGroup implemen
             super(superState);
         }
 
+        public SavedState(Parcel source, ClassLoader loader) {
+            super(source, loader);
+            checked = source.readInt() != 0;
+            collapsed = source.readInt() != 0;
+        }
+
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
@@ -217,7 +224,7 @@ public class CollapsibleCheckboxPreferenceGroup extends PreferenceGroup implemen
         public static final Parcelable.Creator<SavedState> CREATOR =
                 new Parcelable.Creator<SavedState>() {
                     public SavedState createFromParcel(Parcel in) {
-                        return new SavedState(in);
+                        return new SavedState(in, SavedState.class.getClassLoader());
                     }
 
                     public SavedState[] newArray(int size) {
